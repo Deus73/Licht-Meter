@@ -10,14 +10,14 @@
 
 <p align="center">
   <img alt="Android 8+" src="https://img.shields.io/badge/Android-8.0%2B-075F3B?logo=android&logoColor=white">
-  <a href="https://github.com/Deus73/Licht-Meter/releases/latest"><img alt="Nieuwste release" src="https://img.shields.io/github/v/release/Deus73/Licht-Meter?label=download&color=2A0026"></a>
+  <a href="https://github.com/Deus73/Licht-Meter/releases/download/v1.1.0/Licht-Meter-v1.1.0.apk"><img alt="Download versie 1.1.0" src="https://img.shields.io/github/v/release/Deus73/Licht-Meter?label=download%20APK&color=2A0026"></a>
   <img alt="Java 17" src="https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white">
   <img alt="API 34" src="https://img.shields.io/badge/compileSdk-34-2A0026">
   <img alt="Talen" src="https://img.shields.io/badge/talen-NL%20%7C%20EN%20%7C%20FR%20%7C%20DE-075F3B">
 </p>
 
 <p align="center">
-  <a href="https://github.com/Deus73/Licht-Meter/releases/latest"><strong>Download de nieuwste Android APK</strong></a>
+  <a href="https://github.com/Deus73/Licht-Meter/releases/download/v1.1.0/Licht-Meter-v1.1.0.apk"><strong>Download Licht-Meter v1.1.0 APK</strong></a>
 </p>
 
 ## Over de app
