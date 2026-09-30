@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Light Meter</string>
+    <string name="version_label">Versie %1$s</string>
     <string name="eyebrow">LIGHT / PLANT</string>
     <string name="screen_title">Lichtmeter</string>
     <string name="logo_description">Logo van de lichtmeter</string>

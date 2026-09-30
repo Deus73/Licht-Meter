@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Photomètre</string>
+    <string name="version_label">Version %1$s</string>
     <string name="eyebrow">LUMIÈRE / PLANTE</string>
     <string name="screen_title">Photomètre</string>
     <string name="logo_description">Logo du photomètre</string>

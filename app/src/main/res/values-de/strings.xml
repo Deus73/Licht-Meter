@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lichtmesser</string>
+    <string name="version_label">Version %1$s</string>
     <string name="eyebrow">LICHT / PFLANZE</string>
     <string name="screen_title">Lichtmesser</string>
     <string name="logo_description">Logo des Lichtmessers</string>

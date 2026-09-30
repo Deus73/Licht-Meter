@@ -136,6 +136,14 @@ public class MainActivity extends Activity {
         sourceVisualTitle = findViewById(R.id.sourceVisualTitle);
         previewToggleButton = findViewById(R.id.previewToggleButton);
         historyContainer = findViewById(R.id.historyContainer);
+        TextView versionText = findViewById(R.id.versionText);
+        try {
+            String versionName = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionName;
+            versionText.setText(getString(R.string.version_label, versionName));
+        } catch (PackageManager.NameNotFoundException ignored) {
+            versionText.setVisibility(View.GONE);
+        }
         measurementStore = new MeasurementStore(this);
 
         settingsView = getLayoutInflater().inflate(R.layout.dialog_settings, null);
