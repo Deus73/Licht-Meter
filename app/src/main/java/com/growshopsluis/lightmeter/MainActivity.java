@@ -5,8 +5,11 @@ import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -52,7 +55,8 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
     private static final int CAMERA_PERMISSION_REQUEST = 41;
-    private static final double[] PPFD_FACTORS = {0.015, 0.015, 0.025, 0.0185, 0.012, 0.013};
+    private static final int NOTIFICATION_PERMISSION_REQUEST = 42;
+    private static final double[] PPFD_FACTORS = {0.015, 0.025, 0.0185, 0.012, 0.013};
     private static final int[] PRESET_EV = {0, -1, 1};
 
     private TextureView cameraPreview;
@@ -67,14 +71,12 @@ public class MainActivity extends Activity {
     private EditText calibrationInput;
     private EditText lampNameInput;
     private TextView cameraProfileText;
-    private TextView lampDetectionText;
     private View sourceVisual;
+    private View sourceGlow;
     private View meterTarget;
     private ImageView sourceVisualImage;
-    private TextView sourceVisualTitle;
     private Button previewToggleButton;
     private Spinner presetSpinner;
-    private Spinner lightSourceSpinner;
     private LinearLayout historyContainer;
     private MeasurementStore measurementStore;
     private View settingsView;
@@ -104,15 +106,10 @@ public class MainActivity extends Activity {
     private volatile double currentLux;
     private volatile double calibrationFactor = 1.0;
     private double ppfdFactor = PPFD_FACTORS[0];
-    private boolean automaticLampDetection = true;
-    private LampClassifier.Type lampCandidate;
-    private int lampCandidateFrames;
-    private LampClassifier.Type detectedLampType;
+    private int selectedLampType;
     private boolean cameraPreviewVisible;
-    private final double[] lumaHistory = new double[24];
-    private int lumaHistorySize;
-    private int lumaHistoryIndex;
     private long lastUiUpdate;
+    private boolean updatePromptShown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,9 +128,9 @@ public class MainActivity extends Activity {
         assessmentTitle = findViewById(R.id.assessmentTitle);
         assessmentDetail = findViewById(R.id.assessmentDetail);
         sourceVisual = findViewById(R.id.sourceVisual);
+        sourceGlow = findViewById(R.id.sourceGlow);
         meterTarget = findViewById(R.id.meterTarget);
         sourceVisualImage = findViewById(R.id.sourceVisualImage);
-        sourceVisualTitle = findViewById(R.id.sourceVisualTitle);
         previewToggleButton = findViewById(R.id.previewToggleButton);
         historyContainer = findViewById(R.id.historyContainer);
         TextView versionText = findViewById(R.id.versionText);
@@ -145,6 +142,7 @@ public class MainActivity extends Activity {
             versionText.setVisibility(View.GONE);
         }
         measurementStore = new MeasurementStore(this);
+        setupLampTypeButtons();
 
         settingsView = getLayoutInflater().inflate(R.layout.dialog_settings, null);
         lumenValue = settingsView.findViewById(R.id.lumenValue);
@@ -152,7 +150,6 @@ public class MainActivity extends Activity {
         calibrationInput = settingsView.findViewById(R.id.calibrationInput);
         lampNameInput = settingsView.findViewById(R.id.lampNameInput);
         cameraProfileText = settingsView.findViewById(R.id.cameraProfileText);
-        lampDetectionText = settingsView.findViewById(R.id.lampDetectionText);
         presetSpinner = settingsView.findViewById(R.id.presetSpinner);
 
         calibrationInput.setText(formatDecimal(calibrationFactor, 2));
@@ -176,6 +173,8 @@ public class MainActivity extends Activity {
         settingsAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         settingsAnimator.setInterpolator(new LinearInterpolator());
         settingsAnimator.start();
+        UpdateWorker.cleanupInstalledUpdate(this);
+        UpdateWorker.schedule(this);
         showHistory();
         cameraPreview.setSurfaceTextureListener(surfaceTextureListener);
     }
@@ -223,37 +222,6 @@ public class MainActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        lightSourceSpinner = settingsView.findViewById(R.id.lightSourceSpinner);
-        String[] lightSources = {
-                getString(R.string.source_auto), getString(R.string.source_white_led),
-                getString(R.string.source_blurple_led), getString(R.string.source_sunlight),
-                getString(R.string.source_hps), getString(R.string.source_fluorescent)
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_dropdown_item, lightSources);
-        lightSourceSpinner.setAdapter(adapter);
-        lightSourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
-                automaticLampDetection = position == 0;
-                ppfdFactor = PPFD_FACTORS[position];
-                resetLampDetection();
-                if (automaticLampDetection) {
-                    lampDetectionText.setText(R.string.detecting_lamp);
-                    showAnalyzingVisual();
-                } else {
-                    lampDetectionText.setText(getString(
-                            R.string.manual_lamp_source, ppfdFactor));
-                    showManualLampVisual(position);
-                    applyAutomaticWhiteBalance(null);
-                }
-                updateReadings();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
         TextWatcher watcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -275,13 +243,62 @@ public class MainActivity extends Activity {
         calibrationInput.addTextChangedListener(watcher);
     }
 
+    private void setupLampTypeButtons() {
+        int[] buttonIds = {R.id.whiteLedButton, R.id.blurpleLedButton, R.id.sunlightButton,
+                R.id.hpsButton, R.id.fluorescentButton};
+        selectedLampType = Math.max(0, Math.min(PPFD_FACTORS.length - 1,
+                getPreferences(MODE_PRIVATE).getInt("lamp_type", 0)));
+        ppfdFactor = PPFD_FACTORS[selectedLampType];
+        for (int i = 0; i < buttonIds.length; i++) {
+            int index = i;
+            View button = findViewById(buttonIds[i]);
+            button.setSelected(index == selectedLampType);
+            button.setOnClickListener(view -> {
+                selectedLampType = index;
+                ppfdFactor = PPFD_FACTORS[index];
+                getPreferences(MODE_PRIVATE).edit().putInt("lamp_type", index).apply();
+                for (int id : buttonIds) findViewById(id).setSelected(id == buttonIds[index]);
+                updateReadings();
+            });
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        offerDownloadedUpdate();
         startCameraThread();
+        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            requestUpdateNotificationPermission();
+        }
         if (cameraPreview.isAvailable()) {
             openCamera();
         }
+    }
+
+    private void requestUpdateNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+                && !getPreferences(MODE_PRIVATE).getBoolean("notification_permission_requested", false)) {
+            getPreferences(MODE_PRIVATE).edit()
+                    .putBoolean("notification_permission_requested", true).apply();
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    NOTIFICATION_PERMISSION_REQUEST);
+        }
+    }
+
+    private void offerDownloadedUpdate() {
+        String version = UpdateWorker.pendingUpdateVersion(this);
+        if (updatePromptShown || version == null) return;
+        updatePromptShown = true;
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.update_ready_title, version))
+                .setMessage(R.string.update_ready_text)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.install_update, (dialog, which) ->
+                        startActivity(new Intent(this, UpdateInstallActivity.class)))
+                .show();
     }
 
     @Override
@@ -503,7 +520,6 @@ public class MainActivity extends Activity {
             double frameLux = LightCalculations.estimateLux(
                     exposureTimeNs, iso, aperture, normalizedLuma, calibrationFactor);
             currentLux = frameLux;
-            analyzeLampType(image, normalizedLuma, frameLux);
             if (SystemClock.elapsedRealtime() - lastUiUpdate > 350) {
                 lastUiUpdate = SystemClock.elapsedRealtime();
                 runOnUiThread(this::updateReadings);
@@ -521,6 +537,7 @@ public class MainActivity extends Activity {
         double ppfd = LightCalculations.estimatePpfd(currentLux, ppfdFactor);
         ppfdValue.setText(integerFormat.format(ppfd));
         updateAssessment(ppfd);
+        updateLightVisual(currentLux);
         double area = parsePositive(areaInput, 0);
         if (area > 0) {
             lumenValue.setText(getString(R.string.lumen_value, integerFormat.format(
@@ -598,8 +615,6 @@ public class MainActivity extends Activity {
 
     private void restartCamera() {
         closeCamera();
-        resetLampDetection();
-        if (automaticLampDetection) lampDetectionText.setText(R.string.detecting_lamp);
         exposureTimeNs = 0;
         iso = 0;
         currentLux = 0;
@@ -686,7 +701,7 @@ public class MainActivity extends Activity {
     private void showLightGuide() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.light_guide_title)
-                .setMessage(R.string.light_guide_text)
+                .setMessage(R.string.light_guide_current)
                 .setPositiveButton(R.string.close, null)
                 .show();
     }
@@ -700,121 +715,10 @@ public class MainActivity extends Activity {
         return Math.max(compensationRange.getLower(), Math.min(compensationRange.getUpper(), value));
     }
 
-    private void analyzeLampType(Image image, double luma, double frameLux) {
-        if (!automaticLampDetection || image.getPlanes().length < 3) {
-            return;
-        }
-        lumaHistory[lumaHistoryIndex] = luma;
-        lumaHistoryIndex = (lumaHistoryIndex + 1) % lumaHistory.length;
-        lumaHistorySize = Math.min(lumaHistorySize + 1, lumaHistory.length);
-        if (lumaHistorySize < 16) return;
-        double u = averageChromaPlane(image.getPlanes()[1], image.getWidth(), image.getHeight());
-        double v = averageChromaPlane(image.getPlanes()[2], image.getWidth(), image.getHeight());
-        double centeredU = u - 0.5;
-        double centeredV = v - 0.5;
-        double red = clampColor(luma + 1.402 * centeredV);
-        double green = clampColor(luma - 0.344 * centeredU - 0.714 * centeredV);
-        double blue = clampColor(luma + 1.772 * centeredU);
-        LampClassifier.Result result = LampClassifier.classify(
-                red, green, blue, frameLux, calculateFlickerRatio());
-        if (result.type == lampCandidate) lampCandidateFrames++;
-        else {
-            lampCandidate = result.type;
-            lampCandidateFrames = 1;
-        }
-        if (lampCandidateFrames < 10 || detectedLampType == result.type) return;
-
-        detectedLampType = result.type;
-        ppfdFactor = result.type.ppfdFactor;
-        applyAutomaticWhiteBalance(result.type);
-        runOnUiThread(() -> {
-            lampDetectionText.setText(getString(R.string.detected_lamp,
-                    lampTypeName(result.type), result.confidencePercent, result.type.ppfdFactor));
-            showLampVisual(result.type);
-            updateReadings();
-        });
-    }
-
-    private double averageChromaPlane(Image.Plane plane, int imageWidth, int imageHeight) {
-        ByteBuffer buffer = plane.getBuffer();
-        int base = buffer.position();
-        int rowStride = plane.getRowStride();
-        int pixelStride = plane.getPixelStride();
-        int planeWidth = imageWidth / 2;
-        int planeHeight = imageHeight / 2;
-        long total = 0;
-        int samples = 0;
-        for (int y = planeHeight / 4; y < planeHeight * 3 / 4; y += 2) {
-            for (int x = planeWidth / 4; x < planeWidth * 3 / 4; x += 2) {
-                int index = base + y * rowStride + x * pixelStride;
-                if (index >= buffer.limit()) continue;
-                total += buffer.get(index) & 0xff;
-                samples++;
-            }
-        }
-        return samples == 0 ? 0.5 : total / (samples * 255.0);
-    }
-
-    private void applyAutomaticWhiteBalance(LampClassifier.Type type) {
-        CaptureRequest.Builder request = previewRequestBuilder;
-        CameraCaptureSession session = captureSession;
-        if (request == null || session == null || cameraHandler == null) return;
-        int mode = CaptureRequest.CONTROL_AWB_MODE_AUTO;
-        if (type == LampClassifier.Type.HPS) mode = CaptureRequest.CONTROL_AWB_MODE_INCANDESCENT;
-        else if (type == LampClassifier.Type.FLUORESCENT) {
-            mode = CaptureRequest.CONTROL_AWB_MODE_FLUORESCENT;
-        } else if (type == LampClassifier.Type.WHITE_LED) {
-            mode = CaptureRequest.CONTROL_AWB_MODE_DAYLIGHT;
-        }
-        request.set(CaptureRequest.CONTROL_AWB_MODE, mode);
-        try {
-            session.setRepeatingRequest(request.build(), captureCallback, cameraHandler);
-        } catch (CameraAccessException | IllegalStateException ignored) {
-            // A camera switch can close the session while a detection result is being applied.
-        }
-    }
-
-    private void resetLampDetection() {
-        lampCandidate = null;
-        lampCandidateFrames = 0;
-        detectedLampType = null;
-        lumaHistorySize = 0;
-        lumaHistoryIndex = 0;
-        if (automaticLampDetection) runOnUiThread(this::showAnalyzingVisual);
-    }
-
-    private double calculateFlickerRatio() {
-        if (lumaHistorySize == 0) return 0;
-        double average = 0;
-        for (int i = 0; i < lumaHistorySize; i++) average += lumaHistory[i];
-        average /= lumaHistorySize;
-        if (average <= 0) return 0;
-        double variance = 0;
-        for (int i = 0; i < lumaHistorySize; i++) {
-            double difference = lumaHistory[i] - average;
-            variance += difference * difference;
-        }
-        return Math.sqrt(variance / lumaHistorySize) / average;
-    }
-
     private String currentLightSourceLabel() {
-        if (automaticLampDetection && detectedLampType != null) {
-            return getString(R.string.source_auto) + ": " + lampTypeName(detectedLampType);
-        }
-        return String.valueOf(lightSourceSpinner.getSelectedItem());
-    }
-
-    private String lampTypeName(LampClassifier.Type type) {
-        switch (type) {
-            case BLURPLE_LED: return getString(R.string.source_blurple_led);
-            case HPS: return getString(R.string.source_hps);
-            case FLUORESCENT: return getString(R.string.source_fluorescent);
-            default: return getString(R.string.source_white_led);
-        }
-    }
-
-    private double clampColor(double value) {
-        return Math.max(0, Math.min(1, value));
+        int[] labels = {R.string.source_white_led, R.string.source_blurple_led,
+                R.string.source_sunlight, R.string.source_hps, R.string.source_fluorescent};
+        return getString(labels[selectedLampType]);
     }
 
     private void toggleCameraPreview() {
@@ -822,54 +726,29 @@ public class MainActivity extends Activity {
         sourceVisual.setVisibility(cameraPreviewVisible ? View.GONE : View.VISIBLE);
         meterTarget.setVisibility(cameraPreviewVisible ? View.VISIBLE : View.GONE);
         previewToggleButton.setText(cameraPreviewVisible
-                ? R.string.show_source : R.string.show_camera);
+                ? R.string.show_light : R.string.show_camera);
     }
 
-    private void showAnalyzingVisual() {
-        sourceVisualImage.setImageResource(R.drawable.source_analyzing);
-        sourceVisualTitle.setText(R.string.source_analyzing_title);
-        sourceVisualImage.setContentDescription(getString(R.string.source_analyzing_title));
-    }
-
-    private void showManualLampVisual(int position) {
-        switch (position) {
-            case 2:
-                showSourceVisual(R.drawable.source_blurple_led, R.string.source_blurple_led);
-                break;
-            case 3:
-                showSourceVisual(R.drawable.source_sunlight, R.string.source_sunlight);
-                break;
-            case 4:
-                showSourceVisual(R.drawable.source_hps, R.string.source_hps);
-                break;
-            case 5:
-                showSourceVisual(R.drawable.source_fluorescent, R.string.source_fluorescent);
-                break;
-            default:
-                showSourceVisual(R.drawable.source_white_led, R.string.source_white_led);
-        }
-    }
-
-    private void showLampVisual(LampClassifier.Type type) {
-        switch (type) {
-            case BLURPLE_LED:
-                showSourceVisual(R.drawable.source_blurple_led, R.string.source_blurple_led);
-                break;
-            case HPS:
-                showSourceVisual(R.drawable.source_hps, R.string.source_hps);
-                break;
-            case FLUORESCENT:
-                showSourceVisual(R.drawable.source_fluorescent, R.string.source_fluorescent);
-                break;
-            default:
-                showSourceVisual(R.drawable.source_white_led, R.string.source_white_led);
-        }
-    }
-
-    private void showSourceVisual(int drawable, int title) {
-        sourceVisualImage.setImageResource(drawable);
-        sourceVisualTitle.setText(title);
-        sourceVisualImage.setContentDescription(getString(title));
+    private void updateLightVisual(double lux) {
+        float intensity = (float) Math.min(1.0,
+                Math.log10(1.0 + Math.max(0.0, lux)) / Math.log10(100_001.0));
+        int coreAlpha = Math.round(35 + 200 * intensity);
+        int edgeAlpha = Math.round(8 + 90 * intensity);
+        GradientDrawable glow = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{Color.argb(coreAlpha, 255, 248, 184),
+                        Color.argb(edgeAlpha, 216, 255, 71), Color.TRANSPARENT});
+        glow.setShape(GradientDrawable.OVAL);
+        glow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+        glow.setGradientRadius(110 * getResources().getDisplayMetrics().density);
+        sourceGlow.setBackground(glow);
+        float scale = 0.86f + 0.14f * intensity;
+        sourceVisualImage.animate()
+                .alpha(0.42f + 0.58f * intensity)
+                .scaleX(scale)
+                .scaleY(scale)
+                .setDuration(300)
+                .start();
     }
 
     @Override
@@ -886,6 +765,7 @@ public class MainActivity extends Activity {
         if (requestCode != CAMERA_PERMISSION_REQUEST) return;
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             openCamera();
+            requestUpdateNotificationPermission();
         } else {
             showStatus(getString(R.string.camera_permission_required));
         }

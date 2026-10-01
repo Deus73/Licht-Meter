@@ -35,19 +35,14 @@
     <string name="preset_auto">Automatisch / ausgewogen</string>
     <string name="preset_bright">Helles Pflanzenlicht</string>
     <string name="preset_low_light">Wenig Licht</string>
-    <string name="light_source_label">Art der Lichtquelle</string>
-    <string name="source_auto">Automatisch erkennen</string>
+    <string name="show_camera">Kamera ausrichten</string>
+    <string name="show_light">Licht zeigen</string>
+    <string name="light_intensity_visual">Lampe, deren Leuchten sich mit der gemessenen Lichtstärke verändert</string>
     <string name="source_white_led">Vollspektrum-LED</string>
     <string name="source_blurple_led">Violette / Blurple-LED</string>
     <string name="source_sunlight">Sonnenlicht</string>
     <string name="source_hps">HPS</string>
     <string name="source_fluorescent">Leuchtstoff / CFL</string>
-    <string name="detecting_lamp">Lichtquelle wird analysiert… Kreis auf die Lampe richten.</string>
-    <string name="detected_lamp">Wahrscheinlich %1$s · Sicherheit %2$d%% · Faktor %3$.3f</string>
-    <string name="source_analyzing_title">Lichtquelle wird analysiert</string>
-    <string name="show_camera">Kamera ausrichten</string>
-    <string name="show_source">Lichtquelle zeigen</string>
-    <string name="manual_lamp_source">Manuelle Quellenauswahl · Faktor %1$.3f</string>
     <string name="area_label">Beleuchtete Fläche (m², optional)</string>
     <string name="area_hint">z. B. 1,20</string>
     <string name="lumen_empty">Lichtstrom: Fläche eingeben</string>
@@ -66,6 +61,7 @@
     <string name="history_lumen_suffix"> · %1$s lm</string>
     <string name="open_light_guide">Hilfe und Lichtleitfaden</string>
     <string name="light_guide_title">Hilfe</string>
+    <string name="light_guide_current">SO WIRD GEMESSEN\nDen grünen Kreis von Pflanzenhöhe auf die Lampe richten, das passende Lampensymbol wählen und auf einen stabilen Wert warten. Die Lampendarstellung leuchtet stärker, je mehr Licht gemessen wird.\n\nEMPFOHLENE PPFD AUF PFLANZENHÖHE\nStecklinge und Sämlinge: 100–300 µmol/m²/s\nVegetatives Wachstum: 300–600 µmol/m²/s\nBlüte ohne zusätzliches CO₂: 600–1.000 µmol/m²/s\nIntensive Blüte mit kontrolliertem CO₂: 1.000–1.500 µmol/m²/s\nÜber 1.500 µmol/m²/s: Risiko von Lichtstress.\n\nUNGEFÄHRE LUXWERTE JE LAMPENTYP\nDie vier Bereiche folgen derselben Reihenfolge: Sämlinge · Wachstum · Blüte · intensive Blüte.\n\nVollspektrum-LED\n7.000–20.000 · 20.000–40.000 · 40.000–67.000 · 67.000–100.000 Lux\n\nViolette/Blurple-LED\n4.000–12.000 · 12.000–24.000 · 24.000–40.000 · 40.000–60.000 Lux\nLux ist bei violettem Licht weniger zuverlässig.\n\nSonnenlicht\n5.400–16.200 · 16.200–32.400 · 32.400–54.100 · 54.100–81.100 Lux\n\nModerne Natrium-/HPS-Lampe\n8.300–25.000 · 25.000–50.000 · 50.000–83.000 · 83.000–125.000 Lux\n\nLeuchtstoff/CFL\n7.700–23.000 · 23.000–46.000 · 46.000–77.000 · 77.000–115.000 Lux\nDie höchsten Bereiche sind mit Leuchtstoff/CFL meist nicht praktisch erreichbar.\n\nTYPISCHE GESAMTAUSGABE DER LAMPE (PPF)\nModerne LED, etwa 2,5–3,0 µmol/J\n100 W: 250–300 · 200 W: 500–600 · 300 W: 750–900 · 480 W: 1.200–1.440 · 600 W: 1.500–1.800 · 720 W: 1.800–2.160 µmol/s\n\nModerne HPS/Natrium, etwa 1,7–2,1 µmol/J\n250 W: 425–525 · 400 W: 680–840 · 600 W: 1.020–1.260 · 1.000 W: 1.700–2.100 µmol/s\n\nLeuchtstoff/CFL, etwa 0,8–1,3 µmol/J\n55 W: 44–72 · 110 W: 88–143 · 220 W: 176–286 · 330 W: 264–429 µmol/s\n\nLux misst sichtbares Licht pro Quadratmeter. PPFD schätzt das Licht an der Pflanze. PPF ist die gesamte Lampenausgabe. Lumen entspricht Lux × beleuchtete Fläche in m². Kameramessungen und Umrechnungen sind Richtwerte; Abstand, Spektrum, Reflektor und Kalibrierung beeinflussen das Ergebnis. Mit einem zuverlässigen Messgerät kalibrieren und nie direkt in starke Pflanzenlampen schauen.</string>
     <string name="light_guide_text">SO WIRD GEMESSEN\nFront- oder Rückkamera wählen und den grünen Kreis von Pflanzenhöhe auf die Lampe richten. Das Telefon ruhig halten und auf einen stabilen Wert warten. Nie direkt in eine starke Pflanzenlampe schauen.\n\nMit automatischer Erkennung wird der Lampentyp geschätzt. Da sich Telefonfilter unterscheiden, sollte für genauere Ergebnisse mit einem zuverlässigen Messgerät kalibriert werden.\n\nWAS BEDEUTEN DIE WERTE?\nLux misst sichtbares Licht pro Quadratmeter. Foot-Candle (fc) ist die imperiale Einheit derselben Messung: 1 fc = 10,7639 lux. PPFD schätzt die für Pflanzen nutzbaren Lichtphotonen. Lumen ist der gesamte sichtbare Lichtstrom: Lumen = Lux × beleuchtete Fläche in m².\n\nRICHTWERTE AUF PFLANZENHÖHE\nPPFD ist für Pflanzen vorzuziehen. Lux und fc sind Näherungen für weiße Vollspektrum-LEDs.\n\nStecklinge und Sämlinge\n100–300 µmol/m²/s · 7.000–20.000 lux · 650–1.860 fc\n\nVegetatives Wachstum\n300–600 µmol/m²/s · 20.000–40.000 lux · 1.860–3.720 fc\n\nBlüte ohne zusätzliches CO₂\n600–1.000 µmol/m²/s · 40.000–67.000 lux · 3.720–6.225 fc\n\nIntensive Blüte mit kontrolliertem CO₂\n1.000–1.500 µmol/m²/s · 67.000–100.000 lux · 6.225–9.290 fc\n\nTYPISCHE LEISTUNG MODERNER LEDS\nBei etwa 2,5–3,0 µmol/J:\n100 W: 250–300 µmol/s PPF\n200 W: 500–600 µmol/s PPF\n300 W: 750–900 µmol/s PPF\n480 W: 1.200–1.440 µmol/s PPF\n600 W: 1.500–1.800 µmol/s PPF\n720 W: 1.800–2.160 µmol/s PPF\n\nPPF ist die gesamte Lampenleistung; PPFD erreicht die Pflanze. Abstand, Dimmung, Reflexion und Fläche verändern das Ergebnis erheblich.</string>
     <string name="close">Schließen</string>
     <string name="clear_history">Verlauf löschen</string>
@@ -73,7 +69,11 @@
     <string name="clear_history_message">Dadurch wird der gesamte lokale Messverlauf gelöscht.</string>
     <string name="cancel">Abbrechen</string>
     <string name="delete">Löschen</string>
-    <string name="measurement_help">Den Kreis auf Pflanzenhöhe auf die Lichtquelle richten. Lux wird aus der Kamerabelichtung geschätzt. Die Lampenerkennung ist nur ein Richtwert: Weiße LEDs und Sonnenlicht sind kaum unterscheidbar. Mit einem zuverlässigen Messgerät kalibrieren. Nie direkt in starke Pflanzenlampen schauen.</string>
+    <string name="update_channel_name">App-Updates</string>
+    <string name="update_ready_title">Licht-Meter %1$s ist bereit</string>
+    <string name="update_ready_text">Das Update wurde automatisch heruntergeladen. Tippen, um die Installation zu bestätigen.</string>
+    <string name="install_update">Installieren</string>
+    <string name="measurement_help">Den Kreis auf Pflanzenhöhe auf die Lichtquelle richten. Lux wird aus der Kamerabelichtung geschätzt. Die Lampendarstellung leuchtet stärker, je mehr Licht gemessen wird. Mit einem zuverlässigen Messgerät kalibrieren. Nie direkt in starke Pflanzenlampen schauen.</string>
     <string name="lux_value">%1$s lux</string>
     <string name="fc_value">%1$s fc</string>
     <string name="no_camera">Keine geeignete Kamera gefunden</string>

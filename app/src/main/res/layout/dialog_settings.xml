@@ -47,26 +47,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/light_source_label"
-            android:textColor="@color/muted"
-            android:textSize="12sp" />
-        <Spinner
-            android:id="@+id/lightSourceSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="48dp" />
-
-        <TextView
-            android:id="@+id/lampDetectionText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/detecting_lamp"
-            android:textColor="@color/moss"
-            android:textSize="12sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="@string/area_label"
             android:textColor="@color/muted"
             android:textSize="12sp" />
