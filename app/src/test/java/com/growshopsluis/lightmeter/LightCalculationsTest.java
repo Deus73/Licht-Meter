@@ -17,6 +17,7 @@ public class LightCalculationsTest {
         assertEquals(150, LightCalculations.estimatePpfd(10_000, 0.015), 0.001);
         assertEquals(12_000, LightCalculations.estimateLumens(10_000, 1.2), 0.001);
         assertEquals(92.903, LightCalculations.luxToFootCandles(1_000), 0.001);
+        assertEquals(25.92, LightCalculations.estimateProjectedDli(600, 12), 0.001);
     }
 
     @Test

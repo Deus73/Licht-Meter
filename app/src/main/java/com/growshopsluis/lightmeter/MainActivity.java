@@ -56,6 +56,11 @@ import java.util.Locale;
 public class MainActivity extends Activity {
     private static final int CAMERA_PERMISSION_REQUEST = 41;
     private static final int NOTIFICATION_PERMISSION_REQUEST = 42;
+    private static final int QUALITY_SETTLING = 0;
+    private static final int QUALITY_STABLE = 1;
+    private static final int QUALITY_UNSTABLE = 2;
+    private static final int QUALITY_TOO_BRIGHT = 3;
+    private static final int QUALITY_TOO_DARK = 4;
     private static final double[] PPFD_FACTORS = {0.015, 0.025, 0.0185, 0.012, 0.013};
     private static final int[] PRESET_EV = {0, -1, 1};
 
@@ -64,11 +69,15 @@ public class MainActivity extends Activity {
     private TextView luxValue;
     private TextView fcValue;
     private TextView ppfdValue;
+    private TextView stabilityValue;
+    private TextView rangeValue;
+    private TextView dliValue;
     private TextView lumenValue;
     private TextView assessmentTitle;
     private TextView assessmentDetail;
     private EditText areaInput;
     private EditText calibrationInput;
+    private EditText photoperiodInput;
     private EditText lampNameInput;
     private TextView cameraProfileText;
     private View sourceVisual;
@@ -104,12 +113,18 @@ public class MainActivity extends Activity {
     private volatile int iso;
     private volatile float aperture;
     private volatile double currentLux;
+    private volatile double minimumLux;
+    private volatile double maximumLux;
+    private volatile double relativeDeviation = 1;
+    private volatile boolean measurementStable;
+    private volatile int measurementQuality = QUALITY_SETTLING;
     private volatile double calibrationFactor = 1.0;
     private double ppfdFactor = PPFD_FACTORS[0];
     private int selectedLampType;
     private boolean cameraPreviewVisible;
     private long lastUiUpdate;
     private boolean updatePromptShown;
+    private final LightSampleWindow sampleWindow = new LightSampleWindow();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +140,9 @@ public class MainActivity extends Activity {
         luxValue = findViewById(R.id.luxValue);
         fcValue = findViewById(R.id.fcValue);
         ppfdValue = findViewById(R.id.ppfdValue);
+        stabilityValue = findViewById(R.id.stabilityValue);
+        rangeValue = findViewById(R.id.rangeValue);
+        dliValue = findViewById(R.id.dliValue);
         assessmentTitle = findViewById(R.id.assessmentTitle);
         assessmentDetail = findViewById(R.id.assessmentDetail);
         sourceVisual = findViewById(R.id.sourceVisual);
@@ -148,11 +166,14 @@ public class MainActivity extends Activity {
         lumenValue = settingsView.findViewById(R.id.lumenValue);
         areaInput = settingsView.findViewById(R.id.areaInput);
         calibrationInput = settingsView.findViewById(R.id.calibrationInput);
+        photoperiodInput = settingsView.findViewById(R.id.photoperiodInput);
         lampNameInput = settingsView.findViewById(R.id.lampNameInput);
         cameraProfileText = settingsView.findViewById(R.id.cameraProfileText);
         presetSpinner = settingsView.findViewById(R.id.presetSpinner);
 
         calibrationInput.setText(formatDecimal(calibrationFactor, 2));
+        photoperiodInput.setText(formatDecimal(
+                getPreferences(MODE_PRIVATE).getFloat("photoperiod_hours", 12f), 1));
         lampNameInput.setText(getPreferences(MODE_PRIVATE).getString("lamp_name", ""));
         setupInputs();
         meterTarget.setVisibility(View.GONE);
@@ -227,6 +248,7 @@ public class MainActivity extends Activity {
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (calibrationInput.hasFocus()) {
                     calibrationFactor = parsePositive(calibrationInput, 1.0);
+                    resetSampleWindow();
                 }
                 updateReadings();
             }
@@ -237,10 +259,17 @@ public class MainActivity extends Activity {
                                     (float) parsePositive(calibrationInput, 1.0))
                             .apply();
                 }
+                if (photoperiodInput.hasFocus()) {
+                    getPreferences(MODE_PRIVATE).edit()
+                            .putFloat("photoperiod_hours",
+                                    (float) Math.min(24, parsePositive(photoperiodInput, 12.0)))
+                            .apply();
+                }
             }
         };
         areaInput.addTextChangedListener(watcher);
         calibrationInput.addTextChangedListener(watcher);
+        photoperiodInput.addTextChangedListener(watcher);
     }
 
     private void setupLampTypeButtons() {
@@ -510,16 +539,35 @@ public class MainActivity extends Activity {
             int bottom = height * 3 / 4;
             long total = 0;
             int samples = 0;
+            int clippedSamples = 0;
+            int darkSamples = 0;
             for (int y = top; y < bottom; y += 4) {
                 for (int x = left; x < right; x += 4) {
-                    total += buffer.get(bufferBase + y * rowStride + x * pixelStride) & 0xff;
+                    int luma = buffer.get(bufferBase + y * rowStride + x * pixelStride) & 0xff;
+                    total += luma;
+                    if (luma >= 250) clippedSamples++;
+                    if (luma <= 5) darkSamples++;
                     samples++;
                 }
             }
             double normalizedLuma = samples == 0 ? 0 : total / (samples * 255.0);
             double frameLux = LightCalculations.estimateLux(
                     exposureTimeNs, iso, aperture, normalizedLuma, calibrationFactor);
-            currentLux = frameLux;
+            LightSampleWindow.Snapshot snapshot = sampleWindow.add(
+                    SystemClock.elapsedRealtime(), frameLux);
+            currentLux = snapshot.average;
+            minimumLux = snapshot.minimum;
+            maximumLux = snapshot.maximum;
+            relativeDeviation = snapshot.relativeDeviation;
+            double clippedRatio = samples == 0 ? 0 : clippedSamples / (double) samples;
+            double darkRatio = samples == 0 ? 0 : darkSamples / (double) samples;
+            if (clippedRatio >= 0.10) measurementQuality = QUALITY_TOO_BRIGHT;
+            else if (normalizedLuma <= 0.025 || darkRatio >= 0.80) {
+                measurementQuality = QUALITY_TOO_DARK;
+            } else if (snapshot.stable) measurementQuality = QUALITY_STABLE;
+            else if (snapshot.durationMs >= 2_000) measurementQuality = QUALITY_UNSTABLE;
+            else measurementQuality = QUALITY_SETTLING;
+            measurementStable = measurementQuality == QUALITY_STABLE;
             if (SystemClock.elapsedRealtime() - lastUiUpdate > 350) {
                 lastUiUpdate = SystemClock.elapsedRealtime();
                 runOnUiThread(this::updateReadings);
@@ -536,6 +584,7 @@ public class MainActivity extends Activity {
                 decimalFormat.format(LightCalculations.luxToFootCandles(currentLux))));
         double ppfd = LightCalculations.estimatePpfd(currentLux, ppfdFactor);
         ppfdValue.setText(integerFormat.format(ppfd));
+        updateMeasurementSummary(integerFormat, decimalFormat, ppfd);
         updateAssessment(ppfd);
         updateLightVisual(currentLux);
         double area = parsePositive(areaInput, 0);
@@ -545,6 +594,52 @@ public class MainActivity extends Activity {
         } else {
             lumenValue.setText(R.string.lumen_empty);
         }
+    }
+
+    private void updateMeasurementSummary(
+            NumberFormat integerFormat, NumberFormat decimalFormat, double ppfd) {
+        switch (measurementQuality) {
+            case QUALITY_STABLE:
+                stabilityValue.setText(getString(R.string.measurement_stable,
+                        decimalFormat.format(relativeDeviation * 100)));
+                stabilityValue.setTextColor(getColor(R.color.moss));
+                statusText.setText(R.string.status_stable);
+                break;
+            case QUALITY_UNSTABLE:
+                stabilityValue.setText(getString(R.string.measurement_unstable,
+                        decimalFormat.format(relativeDeviation * 100)));
+                stabilityValue.setTextColor(Color.rgb(170, 94, 0));
+                statusText.setText(R.string.status_unstable);
+                break;
+            case QUALITY_TOO_BRIGHT:
+                stabilityValue.setText(R.string.measurement_too_bright);
+                stabilityValue.setTextColor(Color.rgb(176, 45, 31));
+                statusText.setText(R.string.status_too_bright);
+                break;
+            case QUALITY_TOO_DARK:
+                stabilityValue.setText(R.string.measurement_too_dark);
+                stabilityValue.setTextColor(Color.rgb(176, 45, 31));
+                statusText.setText(R.string.status_too_dark);
+                break;
+            default:
+                stabilityValue.setText(R.string.measurement_settling);
+                stabilityValue.setTextColor(getColor(R.color.muted));
+                statusText.setText(R.string.status_settling);
+        }
+        if (currentLux > 0) {
+            rangeValue.setText(getString(R.string.measurement_range,
+                    integerFormat.format(minimumLux), integerFormat.format(currentLux),
+                    integerFormat.format(maximumLux)));
+        } else {
+            rangeValue.setText(R.string.range_empty);
+        }
+        double hours = Math.min(24, parsePositive(photoperiodInput, 12));
+        NumberFormat dliFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+        dliFormat.setMinimumFractionDigits(1);
+        dliFormat.setMaximumFractionDigits(2);
+        dliValue.setText(getString(R.string.projected_dli,
+                dliFormat.format(LightCalculations.estimateProjectedDli(ppfd, hours)),
+                decimalFormat.format(hours)));
     }
 
     private void updateAssessment(double ppfd) {
@@ -615,6 +710,7 @@ public class MainActivity extends Activity {
 
     private void restartCamera() {
         closeCamera();
+        resetSampleWindow();
         exposureTimeNs = 0;
         iso = 0;
         currentLux = 0;
@@ -623,7 +719,7 @@ public class MainActivity extends Activity {
     }
 
     private void saveMeasurement() {
-        if (currentLux <= 0 || cameraId == null) {
+        if (currentLux <= 0 || cameraId == null || !measurementStable) {
             Toast.makeText(this, R.string.measurement_not_ready, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -640,6 +736,16 @@ public class MainActivity extends Activity {
                 LightCalculations.estimatePpfd(currentLux, ppfdFactor), lumens));
         Toast.makeText(this, R.string.measurement_saved, Toast.LENGTH_SHORT).show();
         showHistory();
+    }
+
+    private void resetSampleWindow() {
+        sampleWindow.clear();
+        currentLux = 0;
+        minimumLux = 0;
+        maximumLux = 0;
+        relativeDeviation = 1;
+        measurementStable = false;
+        measurementQuality = QUALITY_SETTLING;
     }
 
     private void showHistory() {

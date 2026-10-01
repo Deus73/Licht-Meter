@@ -12,13 +12,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Deus73/Licht-Meter/releases/download/v1.3.1/Licht-Meter-v1.3.1.apk">
-    <img src="https://img.shields.io/badge/DOWNLOAD-ANDROID%20APK-D8FF47?style=for-the-badge&logo=android&logoColor=06130D&labelColor=075F3B" alt="Download Licht-Meter v1.3.1">
+  <a href="https://github.com/Deus73/Licht-Meter/releases/download/v1.4.0/Licht-Meter-v1.4.0.apk">
+    <img src="https://img.shields.io/badge/DOWNLOAD-ANDROID%20APK-D8FF47?style=for-the-badge&logo=android&logoColor=06130D&labelColor=075F3B" alt="Download Licht-Meter v1.4.0">
   </a>
 </p>
 
 <p align="center">
-  <strong>Versie 1.3.1</strong> · Android 8.0+ · Geen account · Geen advertenties · Meten werkt offline
+  <strong>Versie 1.4.0</strong> · Android 8.0+ · Geen account · Geen advertenties · Meten werkt offline
 </p>
 
 ## Waarom Licht-Meter?
@@ -30,6 +30,9 @@
 - Front- en achtercamera met een eigen kalibratieprofiel.
 - Handmatige lampkeuze met duidelijke logoknoppen en passende PPFD-factor.
 - Lampvisualisatie waarvan de gloed met de gemeten lichtsterkte meeverandert.
+- Gestabiliseerd drie-secondenvenster met minimum, gemiddelde, maximum en spreiding.
+- Geprojecteerde DLI op basis van een instelbare dagelijkse lichtduur.
+- Waarschuwingen voor onrustige, te felle en te donkere metingen.
 - Hoogcontrastscherm voor gebruik bij fel licht.
 - Metingen opslaan per lamp of locatie met datum en tijd.
 - Uitgebreide lichtgids met PPFD-, lux- en PPF-richtwaarden voor LED, HPS en TL/CFL.
@@ -55,7 +58,7 @@
 
 ## Download
 
-**[Download Licht-Meter v1.3.1 voor Android](https://github.com/Deus73/Licht-Meter/releases/download/v1.3.1/Licht-Meter-v1.3.1.apk)**
+**[Download Licht-Meter v1.4.0 voor Android](https://github.com/Deus73/Licht-Meter/releases/download/v1.4.0/Licht-Meter-v1.4.0.apk)**
 
 Android kan bij handmatige APK-installatie vragen om installatie uit deze bron tijdelijk toe
 te staan. De camera wordt gebruikt voor metingen; internet en meldingen worden alleen voor
@@ -68,8 +71,8 @@ voordat een update wordt geïnstalleerd.
 1. Kies onder de lampillustratie het logo van jouw lichtbron.
 2. Open het draaiende tandwiel om camera, meetprofiel en kalibratie in te stellen.
 3. Druk op `Camera richten` en richt de cirkel vanaf bladhoogte naar de lamp.
-4. Wacht tot de waarden stabiel zijn.
-5. Lees de waarden en het automatische groeifaseadvies af.
+4. Wacht tot de status `Stabiel` toont en controleer minimum, gemiddelde en maximum.
+5. Lees PPFD, geprojecteerde DLI en het automatische groeifaseadvies af.
 6. Geef de lamp een naam en sla de meting op.
 
 </details>
@@ -116,6 +119,6 @@ De GitHub Actions-workflow voert tests, APK-build en lint automatisch uit.
 ---
 
 <p align="center">
-  <strong>Licht-Meter v1.3.1</strong><br>
+  <strong>Licht-Meter v1.4.0</strong><br>
   Slimmer licht meten voor sterkere planten.
 </p>

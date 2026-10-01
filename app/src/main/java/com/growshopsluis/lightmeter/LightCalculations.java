@@ -26,6 +26,10 @@ public final class LightCalculations {
         return Math.max(0, lux * areaSquareMeters);
     }
 
+    public static double estimateProjectedDli(double ppfd, double photoperiodHours) {
+        return Math.max(0, ppfd * photoperiodHours * 0.0036);
+    }
+
     public static double luxToFootCandles(double lux) {
         return Math.max(0, lux / 10.7639);
     }
