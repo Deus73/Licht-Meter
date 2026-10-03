@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101713">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Licht-Meter">
+  <meta name="description" content="Meet en vergelijk plantlicht met je telefoon. PWA voor iPhone, iPad en Android.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Licht-Meter Web</title>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#meter" aria-label="Licht-Meter home">
+      <img src="icons/icon-192.png" alt="" width="48" height="48">
+      <span><small>LIGHT / PLANT</small><strong>Licht-Meter</strong></span>
+    </a>
+    <span class="web-badge">WEB</span>
+  </header>
+
+  <main>
+    <section id="meterView" class="view active" aria-labelledby="meterTitle">
+      <div class="hero-copy">
+        <p class="eyebrow">IPHONE · IPAD · ANDROID</p>
+        <h1 id="meterTitle">Licht meten,<br><em>zonder giswerk.</em></h1>
+        <p>Vergelijk lichtverdeling met een relatieve camera-index. Kalibratie geeft een indicatieve luxschatting.</p>
+      </div>
+
+      <article class="camera-card">
+        <div class="camera-stage">
+          <video id="camera" playsinline muted></video>
+          <canvas id="sampleCanvas" width="96" height="96" hidden></canvas>
+          <div class="target" aria-hidden="true"><span></span></div>
+          <div class="camera-placeholder" id="cameraPlaceholder">
+            <span class="bulb-icon">◉</span>
+            <strong>Camera staat uit</strong>
+            <small>Tik hieronder om te meten</small>
+          </div>
+          <span id="qualityPill" class="quality-pill idle">Gereed</span>
+        </div>
+        <button id="cameraButton" class="primary-button" type="button">Camera starten</button>
+        <p class="privacy-note">Beelden blijven op je toestel en worden niet opgeslagen.</p>
+      </article>
+
+      <section class="source-panel" aria-labelledby="sourceTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">LICHTBRON</p><h2 id="sourceTitle">Kies je spectrum</h2></div>
+          <span id="sourceFactor">× 0,0150</span>
+        </div>
+        <div id="sourceButtons" class="source-grid">
+          <button class="source active" data-factor="0.015" data-source="Volledig spectrum LED"><span>LED</span><small>Vol spectrum</small></button>
+          <button class="source" data-factor="0.025" data-source="Paars / blurple LED"><span>RGB</span><small>Blurple</small></button>
+          <button class="source" data-factor="0.0185" data-source="Zonlicht"><span>SUN</span><small>Zonlicht</small></button>
+          <button class="source" data-factor="0.012" data-source="HPS / natrium"><span>HPS</span><small>Natrium</small></button>
+          <button class="source" data-factor="0.013" data-source="TL / CFL"><span>TL</span><small>Fluorescent</small></button>
+        </div>
+      </section>
+
+      <section class="reading-card" aria-live="polite">
+        <div class="reading-main">
+          <p id="readingLabel">RELATIEVE LICHTINDEX</p>
+          <strong id="luxValue">--</strong><span id="luxUnit">index</span>
+        </div>
+        <div class="reading-side">
+          <div><small>PPFD</small><strong id="ppfdValue">--</strong><span>µmol/m²/s</span></div>
+          <div><small>DLI · <span id="hoursLabel">12</span> UUR</small><strong id="dliValue">--</strong><span>mol/m²/dag</span></div>
+        </div>
+        <div class="reading-quality">
+          <strong id="stabilityText">Start de camera</strong>
+          <span id="rangeText">Min -- · gem. -- · max --</span>
+        </div>
+      </section>
+
+      <section class="settings-strip">
+        <label>Lichturen <input id="photoperiod" type="number" min="1" max="24" step="0.5" value="12"><span>uur</span></label>
+      </section>
+
+      <aside class="accuracy-callout">
+        <strong id="calibrationState">Kalibratie aanbevolen</strong>
+        <p>iOS geeft websites geen betrouwbare belichtingsdata. Zonder kalibratie toont de app alleen een relatieve index; lux blijft na kalibratie een cameraschatting rond het referentiepunt.</p>
+        <button type="button" data-open-tool="calibration">Nu kalibreren</button>
+      </aside>
+    </section>
+
+    <section id="toolsView" class="view" aria-labelledby="toolsTitle">
+      <div class="tools-header">
+        <p class="eyebrow">ADVANCED</p>
+        <h1 id="toolsTitle">Gereedschap dat<br><em>iets oplevert.</em></h1>
+        <p>Van één stabiele meting naar een concreet lichtplan.</p>
+      </div>
+      <div class="live-chip"><span></span><strong id="toolsLiveLux">-- lux</strong><small id="toolsLiveState">camera uit</small></div>
+      <div class="tool-list">
+        <button class="tool-card" data-tool="dli"><i>01</i><span><strong>DLI-planner</strong><small>Vergelijk 8, 12, 16 en 18 lichturen</small></span><b>›</b></button>
+        <button class="tool-card" data-tool="workplace"><i>02</i><span><strong>Werkplekcheck</strong><small>Plaats je luxwaarde in praktische niveaus</small></span><b>›</b></button>
+        <button class="tool-card featured" data-tool="heatmap"><i>03</i><span><strong>3×3-lichtkaart</strong><small>Vind hotspots en donkere hoeken</small></span><b>›</b></button>
+        <button class="tool-card" data-tool="logging"><i>04</i><span><strong>Logsessie + CSV</strong><small>Leg stabiele waarden vast over tijd</small></span><b>›</b></button>
+        <button class="tool-card" data-tool="guide"><i>05</i><span><strong>Lux-niveaugids</strong><small>Richtwaarden voor ruimtes en taken</small></span><b>›</b></button>
+        <button class="tool-card" data-tool="calibration"><i>06</i><span><strong>Begeleide kalibratie</strong><small>Koppel aan een referentiemeter</small></span><b>›</b></button>
+      </div>
+      <section class="install-card">
+        <p class="eyebrow">IOS INSTALLEREN</p>
+        <h2>Zet de webapp op je beginscherm</h2>
+        <p>Open in Safari, tik op Delen en kies <strong>Zet op beginscherm</strong>. Daarna werkt de interface ook zonder netwerk.</p>
+      </section>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Hoofdnavigatie">
+    <button class="active" data-view="meter"><span>◉</span>Meter</button>
+    <button data-view="tools"><span>▦</span>Advanced</button>
+  </nav>
+
+  <dialog id="toolDialog">
+    <div class="dialog-head"><div><p class="eyebrow">ADVANCED TOOL</p><h2 id="dialogTitle"></h2></div><button id="dialogClose" aria-label="Sluiten">×</button></div>
+    <div id="dialogBody"></div>
+  </dialog>
+
+  <template id="heatmapTemplate">
+    <p>Meet negen punten op dezelfde hoogte. Verplaats je telefoon en leg ieder punt pas vast wanneer de status stabiel is.</p>
+    <div class="heat-grid"></div>
+    <div class="tool-result heat-summary">Nog geen meetpunten.</div>
+    <div class="button-row"><button class="secondary-button heat-reset">Reset</button><button class="primary-button heat-export">CSV delen</button></div>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

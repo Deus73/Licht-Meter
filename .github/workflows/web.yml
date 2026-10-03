@@ -1,0 +1,36 @@
+name: Web app CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/web.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/web.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate JavaScript and manifest
+        run: |
+          node --check web/app.js
+          node --check web/sw.js
+          node -e "JSON.parse(require('fs').readFileSync('web/manifest.webmanifest', 'utf8'))"
+      - name: Check required PWA assets
+        run: |
+          test -s web/index.html
+          test -s web/styles.css
+          test -s web/icons/icon-192.png
+          test -s web/icons/icon-512.png

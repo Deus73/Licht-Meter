@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="14dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/advanced_intro"
+            android:textColor="@color/muted"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/advancedLiveSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/advanced_summary_background"
+            android:fontFamily="sans-serif-bold"
+            android:padding="12dp"
+            android:textColor="@color/moss"
+            android:textSize="14sp" />
+
+        <LinearLayout android:id="@+id/dliToolButton" style="@style/AdvancedToolCard">
+            <ImageView style="@style/AdvancedToolIcon" android:contentDescription="@null" android:src="@drawable/ic_advanced_leaf" />
+            <LinearLayout style="@style/AdvancedToolCopy">
+                <TextView style="@style/AdvancedToolTitle" android:text="@string/tool_dli" />
+                <TextView style="@style/AdvancedToolDescription" android:text="@string/tool_dli_desc" />
+            </LinearLayout>
+            <TextView style="@style/AdvancedToolArrow" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/workplaceToolButton" style="@style/AdvancedToolCard">
+            <ImageView style="@style/AdvancedToolIcon" android:contentDescription="@null" android:src="@drawable/ic_advanced_check" />
+            <LinearLayout style="@style/AdvancedToolCopy">
+                <TextView style="@style/AdvancedToolTitle" android:text="@string/tool_workplace" />
+                <TextView style="@style/AdvancedToolDescription" android:text="@string/tool_workplace_desc" />
+            </LinearLayout>
+            <TextView style="@style/AdvancedToolArrow" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/heatmapToolButton" style="@style/AdvancedToolCard">
+            <ImageView style="@style/AdvancedToolIcon" android:contentDescription="@null" android:src="@drawable/ic_advanced_grid" />
+            <LinearLayout style="@style/AdvancedToolCopy">
+                <TextView style="@style/AdvancedToolTitle" android:text="@string/tool_heatmap" />
+                <TextView style="@style/AdvancedToolDescription" android:text="@string/tool_heatmap_desc" />
+            </LinearLayout>
+            <TextView style="@style/AdvancedToolArrow" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/logToolButton" style="@style/AdvancedToolCard">
+            <ImageView style="@style/AdvancedToolIcon" android:contentDescription="@null" android:src="@drawable/ic_advanced_chart" />
+            <LinearLayout style="@style/AdvancedToolCopy">
+                <TextView style="@style/AdvancedToolTitle" android:text="@string/tool_log" />
+                <TextView style="@style/AdvancedToolDescription" android:text="@string/tool_log_desc" />
+            </LinearLayout>
+            <TextView style="@style/AdvancedToolArrow" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/luxGuideToolButton" style="@style/AdvancedToolCard">
+            <ImageView style="@style/AdvancedToolIcon" android:contentDescription="@null" android:src="@drawable/ic_advanced_lux" />
+            <LinearLayout style="@style/AdvancedToolCopy">
+                <TextView style="@style/AdvancedToolTitle" android:text="@string/tool_lux_guide" />
+                <TextView style="@style/AdvancedToolDescription" android:text="@string/tool_lux_guide_desc" />
+            </LinearLayout>
+            <TextView style="@style/AdvancedToolArrow" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/calibrationToolButton" style="@style/AdvancedToolCard">
+            <ImageView style="@style/AdvancedToolIcon" android:contentDescription="@null" android:src="@drawable/ic_advanced_calibrate" />
+            <LinearLayout style="@style/AdvancedToolCopy">
+                <TextView style="@style/AdvancedToolTitle" android:text="@string/tool_calibration" />
+                <TextView style="@style/AdvancedToolDescription" android:text="@string/tool_calibration_desc" />
+            </LinearLayout>
+            <TextView style="@style/AdvancedToolArrow" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

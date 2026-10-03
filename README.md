@@ -12,13 +12,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Deus73/Licht-Meter/releases/download/v1.4.0/Licht-Meter-v1.4.0.apk">
-    <img src="https://img.shields.io/badge/DOWNLOAD-ANDROID%20APK-D8FF47?style=for-the-badge&logo=android&logoColor=06130D&labelColor=075F3B" alt="Download Licht-Meter v1.4.0">
+  <a href="https://github.com/Deus73/Licht-Meter/releases/download/v1.5.0/Licht-Meter-v1.5.0.apk">
+    <img src="https://img.shields.io/badge/DOWNLOAD-ANDROID%20APK-D8FF47?style=for-the-badge&logo=android&logoColor=06130D&labelColor=075F3B" alt="Download Licht-Meter v1.5.0">
   </a>
 </p>
 
 <p align="center">
-  <strong>Versie 1.4.0</strong> · Android 8.0+ · Geen account · Geen advertenties · Meten werkt offline
+  <strong>Versie 1.5.0</strong> · Android 8.0+ · Geen account · Geen advertenties · Meten werkt offline
 </p>
 
 ## Waarom Licht-Meter?
@@ -36,6 +36,7 @@
 - Hoogcontrastscherm voor gebruik bij fel licht.
 - Metingen opslaan per lamp of locatie met datum en tijd.
 - Uitgebreide lichtgids met PPFD-, lux- en PPF-richtwaarden voor LED, HPS en TL/CFL.
+- Geavanceerde tools voor DLI-planning, werkplekcontrole, 3×3-lichtkaarten, logs en kalibratie.
 - Wekelijkse updatecontrole met automatische APK-download.
 - Nederlands, Engels, Frans en Duits.
 
@@ -58,12 +59,26 @@
 
 ## Download
 
-**[Download Licht-Meter v1.4.0 voor Android](https://github.com/Deus73/Licht-Meter/releases/download/v1.4.0/Licht-Meter-v1.4.0.apk)**
+**[Download Licht-Meter v1.5.0 voor Android](https://github.com/Deus73/Licht-Meter/releases/download/v1.5.0/Licht-Meter-v1.5.0.apk)**
 
 Android kan bij handmatige APK-installatie vragen om installatie uit deze bron tijdelijk toe
 te staan. De camera wordt gebruikt voor metingen; internet en meldingen worden alleen voor
 de wekelijkse updatecontrole en APK-download gebruikt. Android vraagt altijd om bevestiging
 voordat een update wordt geïnstalleerd.
+
+## Webapp voor iPhone en iPad
+
+Naast de native Android-app bevat deze repository een installeerbare PWA in [`web/`](web/).
+De webapp biedt een relatieve lichtindex, begeleide kalibratie, lampfactoren, DLI, een
+3×3-lichtkaart, logsessies en CSV-export. Absolute waarden blijven na kalibratie een
+cameraschatting rond het referentiepunt. Android blijft de primaire en nauwkeurigere uitvoering,
+omdat een browser op iOS geen betrouwbare ISO- en sluitertijdmetadata beschikbaar stelt.
+
+Na deployment via GitHub Pages is de PWA beschikbaar op:
+**[https://deus73.github.io/Licht-Meter/](https://deus73.github.io/Licht-Meter/)**
+
+Op iPhone of iPad: open de link in Safari, tik op `Delen` en kies `Zet op beginscherm`.
+De webapp vereist iOS/iPadOS 15.4 of nieuwer.
 
 <details>
 <summary><strong>Hoe meet ik?</strong></summary>

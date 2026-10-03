@@ -353,6 +353,15 @@
             android:text="@string/open_light_guide"
             android:textColor="@color/white" />
 
+        <Button
+            android:id="@+id/advancedButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/moss"
+            android:text="@string/advanced_button"
+            android:textColor="@color/white" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

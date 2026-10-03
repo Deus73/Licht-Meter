@@ -88,6 +88,7 @@ public class MainActivity extends Activity {
     private Spinner presetSpinner;
     private LinearLayout historyContainer;
     private MeasurementStore measurementStore;
+    private AdvancedTools advancedTools;
     private View settingsView;
     private AlertDialog settingsDialog;
     private ObjectAnimator settingsAnimator;
@@ -176,9 +177,30 @@ public class MainActivity extends Activity {
                 getPreferences(MODE_PRIVATE).getFloat("photoperiod_hours", 12f), 1));
         lampNameInput.setText(getPreferences(MODE_PRIVATE).getString("lamp_name", ""));
         setupInputs();
+        advancedTools = new AdvancedTools(this, new AdvancedTools.Readings() {
+            @Override public double lux() { return currentLux; }
+            @Override public double ppfd() {
+                return LightCalculations.estimatePpfd(currentLux, ppfdFactor);
+            }
+            @Override public double photoperiodHours() {
+                return Math.min(24, parsePositive(photoperiodInput, 12));
+            }
+            @Override public boolean stable() { return measurementStable; }
+            @Override public double calibrationFactor() { return calibrationFactor; }
+            @Override public void applyCalibration(double factor) {
+                calibrationFactor = factor;
+                getPreferences(MODE_PRIVATE).edit()
+                        .putFloat(cameraProfileKey + "_calibration", (float) factor).apply();
+                calibrationInput.clearFocus();
+                calibrationInput.setText(formatDecimal(factor, 2));
+                resetSampleWindow();
+                updateReadings();
+            }
+        });
         meterTarget.setVisibility(View.GONE);
         previewToggleButton.setOnClickListener(view -> toggleCameraPreview());
         findViewById(R.id.lightGuideButton).setOnClickListener(view -> showLightGuide());
+        findViewById(R.id.advancedButton).setOnClickListener(view -> advancedTools.show());
         settingsView.findViewById(R.id.saveMeasurementButton)
                 .setOnClickListener(view -> saveMeasurement());
         findViewById(R.id.clearHistoryButton).setOnClickListener(view -> confirmClearHistory());
@@ -332,6 +354,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
+        measurementStable = false;
+        if (advancedTools != null) advancedTools.onPause();
         closeCamera();
         stopCameraThread();
         super.onPause();
