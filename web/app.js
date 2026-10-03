@@ -10,6 +10,7 @@ const state = {
   timer: null,
   cameraRequest: 0,
   starting: false,
+  facing: 'user',
   samples: [],
   lux: 0,
   min: 0,
@@ -19,8 +20,8 @@ const state = {
   quality: 'idle',
   factor: Number(localStorage.getItem('lm-factor')) || 0.015,
   source: localStorage.getItem('lm-source') || 'Volledig spectrum LED',
-  scale: Number(localStorage.getItem('lm-scale')) || 1000,
-  calibrated: localStorage.getItem('lm-calibrated') === 'true',
+  scale: 1000,
+  calibrated: false,
   hours: Number(localStorage.getItem('lm-hours')) || 12,
 };
 
@@ -32,6 +33,14 @@ function ppfd() { return Math.max(0, state.lux * state.factor); }
 function dli(hours = state.hours) { return ppfd() * hours * 0.0036; }
 function hasMeasurement() { return state.samples.length > 0; }
 function hasAbsoluteMeasurement() { return hasMeasurement() && state.calibrated; }
+
+function loadCameraCalibration() {
+  const suffix = state.facing === 'user' ? 'user' : 'environment';
+  const legacyScale = state.facing === 'environment' ? localStorage.getItem('lm-scale') : null;
+  const legacyCalibrated = state.facing === 'environment' && localStorage.getItem('lm-calibrated') === 'true';
+  state.scale = Number(localStorage.getItem(`lm-scale-${suffix}`) || legacyScale) || 1000;
+  state.calibrated = localStorage.getItem(`lm-calibrated-${suffix}`) === 'true' || legacyCalibrated;
+}
 
 async function toggleCamera() {
   if (state.starting) return;
@@ -50,7 +59,7 @@ async function toggleCamera() {
   $('#cameraButton').textContent = 'Camera starten…';
   try {
     pendingStream = await navigator.mediaDevices.getUserMedia({
-      video: {facingMode: {ideal: 'environment'}, width: {ideal: 1280}, height: {ideal: 720}},
+      video: {facingMode: {ideal: state.facing}, width: {ideal: 1280}, height: {ideal: 720}},
       audio: false,
     });
     if (request !== state.cameraRequest || document.visibilityState === 'hidden') {
@@ -65,6 +74,7 @@ async function toggleCamera() {
       return;
     }
     state.stream = pendingStream;
+    video.classList.toggle('mirrored', state.facing === 'user');
     $('#cameraPlaceholder').classList.add('hidden');
     $('#cameraButton').textContent = 'Camera stoppen';
     state.samples = [];
@@ -189,7 +199,10 @@ function renderReadings() {
     ? absolute ? `${nf0.format(state.lux)} lux geschat · ${nf0.format(ppfd())} PPFD` : `${nf0.format(state.lux)} relatieve index`
     : '--';
   $('#toolsLiveState').textContent = state.stream ? $('#qualityPill').textContent.toLowerCase() : 'camera uit';
-  $('#calibrationState').textContent = state.calibrated ? 'Webcamera gekalibreerd' : 'Kalibratie aanbevolen';
+  const cameraLabel = state.facing === 'user' ? 'Frontcamera' : 'Achtercamera';
+  $('#calibrationState').textContent = state.calibrated
+    ? `${cameraLabel} gekalibreerd`
+    : `Kalibratie ${cameraLabel.toLowerCase()} aanbevolen`;
 }
 
 function selectSource(button) {
@@ -199,6 +212,22 @@ function selectSource(button) {
   localStorage.setItem('lm-factor', state.factor);
   localStorage.setItem('lm-source', state.source);
   $('#sourceFactor').textContent = `× ${state.factor.toLocaleString('nl-NL', {minimumFractionDigits: 4})}`;
+  renderReadings();
+}
+
+async function selectCamera(button) {
+  const facing = button.dataset.facing;
+  if (facing === state.facing) return;
+  const wasRunning = Boolean(state.stream) || state.starting;
+  stopCamera();
+  state.facing = facing;
+  loadCameraCalibration();
+  $$('.camera-option').forEach(option => {
+    const selected = option === button;
+    option.classList.toggle('active', selected);
+    option.setAttribute('aria-pressed', String(selected));
+  });
+  if (wasRunning) await toggleCamera();
   renderReadings();
 }
 
@@ -363,8 +392,9 @@ function renderCalibration(body) {
     if (!(reference > 0) || !(state.lux > 0)) return notify('Voer een geldige referentiewaarde in.');
     state.scale = state.calibrated ? state.scale * reference / state.lux : reference * 100 / state.lux;
     state.calibrated = true;
-    localStorage.setItem('lm-scale', state.scale);
-    localStorage.setItem('lm-calibrated', 'true');
+    const suffix = state.facing === 'user' ? 'user' : 'environment';
+    localStorage.setItem(`lm-scale-${suffix}`, state.scale);
+    localStorage.setItem(`lm-calibrated-${suffix}`, 'true');
     state.samples = [];
     notify('Kalibratie opgeslagen voor deze browser.');
     $('#toolDialog').close();
@@ -409,6 +439,7 @@ $('#cameraButton').addEventListener('click', toggleCamera);
 $('#dialogClose').addEventListener('click', () => $('#toolDialog').close());
 $$('.bottom-nav button').forEach(button => button.addEventListener('click', () => switchView(button.dataset.view)));
 $$('.source').forEach(button => button.addEventListener('click', () => selectSource(button)));
+$$('.camera-option').forEach(button => button.addEventListener('click', () => selectCamera(button)));
 $$('[data-tool]').forEach(button => button.addEventListener('click', () => openTool(button.dataset.tool)));
 $$('[data-open-tool]').forEach(button => button.addEventListener('click', () => openTool(button.dataset.openTool)));
 $('#photoperiod').addEventListener('input', event => {
@@ -422,6 +453,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 $('#photoperiod').value = state.hours;
+loadCameraCalibration();
 const savedSource = $$('.source').find(button => button.dataset.source === state.source) || $('.source');
 selectSource(savedSource);
 renderReadings();

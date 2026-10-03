@@ -69,7 +69,8 @@ voordat een update wordt geïnstalleerd.
 ## Webapp voor iPhone en iPad
 
 Naast de native Android-app bevat deze repository een installeerbare PWA in [`web/`](web/).
-De webapp biedt een relatieve lichtindex, begeleide kalibratie, lampfactoren, DLI, een
+De webapp start standaard met de frontcamera en laat wisselen naar de achtercamera. Verder biedt
+de webapp een relatieve lichtindex, cameraspecifieke kalibratie, lampfactoren, DLI, een
 3×3-lichtkaart, logsessies en CSV-export. Absolute waarden blijven na kalibratie een
 cameraschatting rond het referentiepunt. Android blijft de primaire en nauwkeurigere uitvoering,
 omdat een browser op iOS geen betrouwbare ISO- en sluitertijdmetadata beschikbaar stelt.

@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#101713">
+  <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Licht-Meter">
   <meta name="description" content="Meet en vergelijk plantlicht met je telefoon. PWA voor iPhone, iPad en Android.">
   <link rel="manifest" href="manifest.webmanifest">
@@ -43,7 +43,13 @@
           </div>
           <span id="qualityPill" class="quality-pill idle">Gereed</span>
         </div>
-        <button id="cameraButton" class="primary-button" type="button">Camera starten</button>
+        <div class="camera-actions">
+          <div class="camera-switch" role="group" aria-label="Kies camera">
+            <button class="camera-option active" type="button" data-facing="user" aria-pressed="true">Frontcamera</button>
+            <button class="camera-option" type="button" data-facing="environment" aria-pressed="false">Achtercamera</button>
+          </div>
+          <button id="cameraButton" class="primary-button" type="button">Camera starten</button>
+        </div>
         <p class="privacy-note">Beelden blijven op je toestel en worden niet opgeslagen.</p>
       </article>
 
