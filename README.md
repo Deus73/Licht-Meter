@@ -85,6 +85,8 @@ Alternatief kan het verwijderbare Web Clip-profiel direct worden geïnstalleerd 
 **[Licht-Meter.mobileconfig](https://growshopsluis.nl/licht-meter-ios/Licht-Meter.mobileconfig)**.
 Omdat het profiel niet cryptografisch is ondertekend, toont iOS vóór installatie een waarschuwing
 en moet de installatie onder `Instellingen` > `Profiel gedownload` worden bevestigd.
+Bij een profielupdate moet het bestaande Licht-Meter-profiel eerst worden verwijderd via
+`Instellingen` > `Algemeen` > `VPN- en apparaatbeheer` en daarna opnieuw worden geïnstalleerd.
 
 <details>
 <summary><strong>Hoe meet ik?</strong></summary>
