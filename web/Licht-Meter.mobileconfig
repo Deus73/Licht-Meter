@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>ConsentText</key>
+    <dict>
+        <key>default</key>
+        <string>Dit profiel voegt alleen de Licht-Meter webapp toe aan het beginscherm. Het configureert geen accounts, netwerkverbindingen of toestelbeheer.</string>
+    </dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>FullScreen</key>
+            <true/>
+            <key>IsRemovable</key>
+            <true/>
+            <key>Label</key>
+            <string>Licht-Meter</string>
+            <key>PayloadDescription</key>
+            <string>Voegt Licht-Meter toe aan het beginscherm.</string>
+            <key>PayloadDisplayName</key>
+            <string>Licht-Meter Web Clip</string>
+            <key>PayloadIdentifier</key>
+            <string>nl.growshopsluis.lichtmeter.webclip</string>
+            <key>PayloadType</key>
+            <string>com.apple.webClip.managed</string>
+            <key>PayloadUUID</key>
+            <string>50F31444-B347-4268-8A05-6D86225D85E5</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>Precomposed</key>
+            <false/>
+            <key>URL</key>
+            <string>https://deus73.github.io/Licht-Meter/</string>
+        </dict>
+    </array>
+    <key>PayloadDescription</key>
+    <string>Installeert de Licht-Meter webapp als verwijderbare snelkoppeling op het beginscherm.</string>
+    <key>PayloadDisplayName</key>
+    <string>Licht-Meter webapp</string>
+    <key>PayloadIdentifier</key>
+    <string>nl.growshopsluis.lichtmeter.profile</string>
+    <key>PayloadOrganization</key>
+    <string>Growshop Sluis</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>F89534F2-E3E1-433D-A10C-D018678E2603</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>

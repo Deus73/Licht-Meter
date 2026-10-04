@@ -81,6 +81,11 @@ Na deployment via GitHub Pages is de PWA beschikbaar op:
 Op iPhone of iPad: open de link in Safari, tik op `Delen` en kies `Zet op beginscherm`.
 De webapp vereist iOS/iPadOS 15.4 of nieuwer.
 
+Alternatief kan het verwijderbare Web Clip-profiel direct worden geïnstalleerd via
+**[Licht-Meter.mobileconfig](https://deus73.github.io/Licht-Meter/Licht-Meter.mobileconfig)**.
+Omdat het profiel niet cryptografisch is ondertekend, toont iOS vóór installatie een waarschuwing
+en moet de installatie onder `Instellingen` > `Profiel gedownload` worden bevestigd.
+
 <details>
 <summary><strong>Hoe meet ik?</strong></summary>
 

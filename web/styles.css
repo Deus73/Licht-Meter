@@ -190,6 +190,8 @@ h1 em { color: var(--green); }
 .install-card { background: #073d29; color: #fff; }
 .install-card .eyebrow { color: var(--acid); }
 .install-card p:last-child { color: #cde1d5; }
+.profile-button { display: grid; min-height: 52px; margin-top: 16px; place-items: center; border-radius: 14px; background: var(--acid); color: var(--ink); font-weight: 900; text-decoration: none; }
+.install-card .install-alternative { margin-bottom: 0; color: #cde1d5; font-size: 12px; }
 
 .bottom-nav { border-color: #2f5b47; background: #073d29f2; }
 .bottom-nav button { color: #cde1d5; }
