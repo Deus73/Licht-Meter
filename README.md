@@ -82,7 +82,7 @@ Op iPhone of iPad: open de link in Safari, tik op `Delen` en kies `Zet op begins
 De webapp vereist iOS/iPadOS 15.4 of nieuwer.
 
 Alternatief kan het verwijderbare Web Clip-profiel direct worden geïnstalleerd via
-**[Licht-Meter.mobileconfig](https://deus73.github.io/Licht-Meter/Licht-Meter.mobileconfig)**.
+**[Licht-Meter.mobileconfig](https://growshopsluis.nl/licht-meter-ios/Licht-Meter.mobileconfig)**.
 Omdat het profiel niet cryptografisch is ondertekend, toont iOS vóór installatie een waarschuwing
 en moet de installatie onder `Instellingen` > `Profiel gedownload` worden bevestigd.
 
