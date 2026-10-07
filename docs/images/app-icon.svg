@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title description">
+  <title id="title">Licht-Meter appicoon</title>
+  <desc id="description">Een lichtsensor boven twee groeibladeren op een donkergroene achtergrond.</desc>
+  <rect width="1024" height="1024" rx="224" fill="#052E20"/>
+  <circle cx="512" cy="390" r="350" fill="#0A6845" fill-opacity=".52"/>
+  <path d="M113 737C268 828 408 873 563 887C700 899 818 878 911 839" fill="none" stroke="#FFFFFF" stroke-opacity=".06" stroke-width="42" stroke-linecap="round"/>
+  <g>
+    <g fill="none" stroke="#D8FF47" stroke-width="38" stroke-linecap="round">
+      <path d="M512 135V201"/>
+      <path d="M322 213L369 260"/>
+      <path d="M243 402H309"/>
+      <path d="M702 213L655 260"/>
+      <path d="M781 402H715"/>
+    </g>
+    <circle cx="512" cy="402" r="174" fill="#D8FF47"/>
+    <circle cx="512" cy="402" r="111" fill="#FFFFFF"/>
+    <circle cx="512" cy="402" r="64" fill="#075F3B"/>
+    <circle cx="489" cy="379" r="17" fill="#D8FF47"/>
+    <path d="M512 544V808" fill="none" stroke="#FFFFFF" stroke-width="34" stroke-linecap="round"/>
+    <path d="M500 710C435 590 323 559 261 595C271 706 357 779 501 755C504 740 504 724 500 710Z" fill="#FFFFFF"/>
+    <path d="M524 710C589 590 701 559 763 595C753 706 667 779 523 755C520 740 520 724 524 710Z" fill="#B9F0CE"/>
+    <path d="M337 635C405 662 458 699 501 755" fill="none" stroke="#075F3B" stroke-width="24" stroke-linecap="round"/>
+    <path d="M687 635C619 662 566 699 523 755" fill="none" stroke="#075F3B" stroke-width="24" stroke-linecap="round"/>
+  </g>
+</svg>

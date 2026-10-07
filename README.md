@@ -12,13 +12,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Deus73/Licht-Meter/releases/download/v1.5.0/Licht-Meter-v1.5.0.apk">
-    <img src="https://img.shields.io/badge/DOWNLOAD-ANDROID%20APK-D8FF47?style=for-the-badge&logo=android&logoColor=06130D&labelColor=075F3B" alt="Download Licht-Meter v1.5.0">
+  <a href="https://github.com/Deus73/Licht-Meter/releases/download/v1.5.1/Licht-Meter-v1.5.1.apk">
+    <img src="https://img.shields.io/badge/DOWNLOAD-ANDROID%20APK-D8FF47?style=for-the-badge&logo=android&logoColor=06130D&labelColor=075F3B" alt="Download Licht-Meter v1.5.1">
   </a>
 </p>
 
 <p align="center">
-  <strong>Versie 1.5.0</strong> · Android 8.0+ · Geen account · Geen advertenties · Meten werkt offline
+  <strong>Versie 1.5.1</strong> · Android 8.0+ · Geen account · Geen advertenties · Meten werkt offline
 </p>
 
 ## Waarom Licht-Meter?
@@ -59,7 +59,7 @@
 
 ## Download
 
-**[Download Licht-Meter v1.5.0 voor Android](https://github.com/Deus73/Licht-Meter/releases/download/v1.5.0/Licht-Meter-v1.5.0.apk)**
+**[Download Licht-Meter v1.5.1 voor Android](https://github.com/Deus73/Licht-Meter/releases/download/v1.5.1/Licht-Meter-v1.5.1.apk)**
 
 Android kan bij handmatige APK-installatie vragen om installatie uit deze bron tijdelijk toe
 te staan. De camera wordt gebruikt voor metingen; internet en meldingen worden alleen voor
